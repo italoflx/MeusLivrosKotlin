@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.room.Room
+import ufrn.br.meuslivros.database.AppDatabase
 import ufrn.br.meuslivros.databinding.ActivityMainBinding
+import ufrn.br.meuslivros.model.Livro
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +27,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "meusLivros.sqlite"
+        ).fallbackToDestructiveMigration()
+            .allowMainThreadQueries().build()
+
         binding  = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         binding.cadastrar.setOnClickListener{
@@ -32,8 +43,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.listar.setOnClickListener{
-            val i = Intent(this, ListarLivros::class.java)
-            activityLauncher.launch(i)
+            if(db.livroDao().listar().isNotEmpty()){
+                val i = Intent(this, ListarLivros::class.java)
+                activityLauncher.launch(i)
+            }else{
+                Toast.makeText(this, "Não existem livros cadastrados!!", Toast.LENGTH_SHORT).show()
+        }
         }
     }
 }

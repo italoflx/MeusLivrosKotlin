@@ -1,8 +1,8 @@
 package ufrn.br.meuslivros
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.room.Room
 import ufrn.br.meuslivros.database.AppDatabase
@@ -26,13 +26,11 @@ class CadastrarLivro : AppCompatActivity() {
         binding.buttonSalvar.setOnClickListener{
             val stringAno = binding.editTextNota.text.toString()
             var livro:Livro = Livro(binding.editTextTitulo.text.toString() , binding.editTextAutor.text.toString(), stringAno.toInt(),
-                binding.ratingBar.numStars)
-            db.livroDao().inserir(livro)
-            val livros: List<Livro> = db.livroDao().listar()
+                binding.ratingBar.rating.toInt())
 
-            livros.forEach {livro ->
-                println("${livro.ano} ${livro.autor} ${livro.nome} ${livro.nota}")
-            }
+            db.livroDao().inserir(livro)
+            Toast.makeText(this, "Livro salvo!", Toast.LENGTH_SHORT).show()
+            onBackPressed()
         }
 
         binding.buttonCancelar.setOnClickListener{
